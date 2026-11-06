@@ -1,6 +1,6 @@
 import unittest
 import taxi_app
-
+import xmlrunner
 class TestTaxiApp(unittest.TestCase):
     
     def setUp(self):
@@ -47,4 +47,5 @@ class TestTaxiApp(unittest.TestCase):
         self.assertIn("Олександрп", result)
 
 if __name__ == '__main__':
-    unittest.main()
+    runner = xmlrunner.XMLTestRunner(output='test-reports')
+    unittest.main(testRunner=runner)

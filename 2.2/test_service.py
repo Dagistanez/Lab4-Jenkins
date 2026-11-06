@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from gateway_service import app
+import xmlrunner
 
 client = TestClient(app)
 
@@ -56,3 +57,8 @@ class TestGatewayService(unittest.TestCase):
 
         assert response.status_code == 404
         assert response.json()["detail"] == "На жаль, зараз немає вільних водіїв"
+        import xmlrunner
+
+if __name__ == '__main__':
+    runner = xmlrunner.XMLTestRunner(output='test-reports')
+    unittest.main(testRunner=runner)
