@@ -21,13 +21,14 @@ pipeline {
 
         stage('Run Tests for Part 1 (2.1)') {
             steps {
-                sh './venv/bin/python3 -m unittest discover -s 2.1 -p "test_*.py"'
+                // Запускаємо через xmlrunner з вказанням папки для XML-звітів
+                sh './venv/bin/python3 -m xmlrunner discover -s 2.1 -p "test_*.py" -o test-reports'
             }
         }
 
         stage('Run Tests for Part 2 (2.2)') {
             steps {
-                sh './venv/bin/python3 -m unittest discover -s 2.2 -p "test_*.py"'
+                sh './venv/bin/python3 -m xmlrunner discover -s 2.2 -p "test_*.py" -o test-reports'
             }
         }
     }
