@@ -1,0 +1,24 @@
+services:
+  gateway:
+    build: .
+    container_name: gateway_container
+    command: uvicorn gateway_service:app --host 0.0.0.0 --port 8002 --reload
+    ports:
+      - "8002:8002"
+    environment:
+      - DRIVER_SERVICE_URL=http://driver-service:8000
+      - FARE_SERVICE_URL=http://fare-service:8001
+
+  driver-service:
+    build: .
+    container_name: driver_container
+    command: uvicorn driver_service:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+
+  fare-service:
+    build: .
+    container_name: fare_container
+    command: uvicorn fare_service:app --host 0.0.0.0 --port 8001 --reload
+    ports:
+      - "8001:8001"
