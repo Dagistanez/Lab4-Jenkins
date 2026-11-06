@@ -1,3 +1,6 @@
 venv/
 .venv/
 test-reports/
+venv/
+.venv/
+test-reports/
