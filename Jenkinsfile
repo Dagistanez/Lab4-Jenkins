@@ -8,23 +8,28 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Setup venv and Install Dependencies') {
             steps {
-                sh 'python3 -m pip install --user unittest-xml-reporting fastapi httpx'
+                // Створюємо віртуальне середовище .venv та встановлюємо в нього залежності
+                sh '''
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip
+                    ./venv/bin/pip install unittest-xml-reporting fastapi httpx
+                '''
             }
         }
 
         stage('Run Tests for Part 1 (2.1)') {
             steps {
-                // Запуск тестів з першої папки
-                sh 'python3 -m unittest discover -s 2.1 -p "test_*.py"'
+                // Запускаємо тести з першої папки через python з віртуального середовища
+                sh './venv/bin/python3 -m unittest discover -s 2.1 -p "test_*.py"'
             }
         }
 
         stage('Run Tests for Part 2 (2.2)') {
             steps {
-                // Запуск тестів з другої папки
-                sh 'python3 -m unittest discover -s 2.2 -p "test_*.py"'
+                // Запускаємо тести з другої папки
+                sh './venv/bin/python3 -m unittest discover -s 2.2 -p "test_*.py"'
             }
         }
     }
@@ -34,7 +39,7 @@ pipeline {
             junit '**/test-reports/*.xml'
         }
         success {
-            echo 'Успіх! Усі тести з обох папок пройшли успішно.'
+            echo 'Успіх! Усі тести з обох палок пройшли успішно.'
         }
         failure {
             echo 'Увага! Деякі тести провалилися.'
