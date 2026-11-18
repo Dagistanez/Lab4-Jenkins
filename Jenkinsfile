@@ -1,47 +1,35 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
-        stage('Setup venv and Install Dependencies') {
+        stage('Run Tests') {
             steps {
                 sh '''
-                    rm -rf venv
                     python3 -m venv venv
-                    ./venv/bin/pip install --upgrade pip
-                    ./venv/bin/pip install unittest-xml-reporting fastapi httpx
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install fastapi httpx unittest-xml-reporting
+                    python -m unittest discover -s 2.1 -p "test_*.py"
+                    python -m unittest discover -s 2.2 -p "test_*.py"
                 '''
             }
         }
-
-        stage('Run Tests for Part 1 (2.1)') {
+        stage('Build Docker Image') {
             steps {
-                // Запускаємо через xmlrunner з вказанням папки для XML-звітів
-                sh './venv/bin/python3 -m xmlrunner discover -s 2.1 -p "test_*.py" -o test-reports'
+                sh 'docker build -t kokhan0/taxi-app:latest .'
             }
         }
-
-        stage('Run Tests for Part 2 (2.2)') {
+        stage('Push to Docker Hub') {
             steps {
-                sh './venv/bin/python3 -m xmlrunner discover -s 2.2 -p "test_*.py" -o test-reports'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    sh 'docker push kokhan0/taxi-app:latest'
+                }
             }
-        }
-    }
-
-    post {
-        always {
-            junit '**/test-reports/*.xml'
-        }
-        success {
-            echo 'Успіх! Усі тести з обох папок пройшли успішно.'
-        }
-        failure {
-            echo 'Увага! Деякі тести провалилися.'
         }
     }
 }
