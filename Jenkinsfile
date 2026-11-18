@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label '' // Запускає збірку на тому ж вузлі, де налаштований головний Jenkins
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
